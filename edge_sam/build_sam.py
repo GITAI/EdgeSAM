@@ -139,8 +139,11 @@ def _build_sam(image_encoder, checkpoint, enable_batch=False, enable_distill=Fal
     if not enable_distill:
         sam.eval()
         if checkpoint is not None:
+            map_location = None
+            if not torch.cuda.is_available():
+                map_location = torch.device('cpu')
             with open(checkpoint, "rb") as f:
-                state_dict = torch.load(f)
+                state_dict = torch.load(f, map_location=map_location)
             print(sam.load_state_dict(state_dict, strict=False))
     return sam
 
